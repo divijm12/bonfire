@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta property="og:title" content="Bonfire Night">
+<meta property="og:description" content="Friday, Nov 27 · 7 PM · 4803 Osage St">
+<title>Bonfire Night at Osage</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: full-bleed live fire canvas behind one centered invite column; terminal sits below the details */
+:root{
+  --night:#0b0a12; --ember:#ff6a2b; --flame:#ffb347; --spark:#ffe08a;
+  --ash:#f3e9dc; --smoke:#a99c8f; --term:#120f17; --term-line:#2a2230; --ok:#8be28b;
+  --display:"Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--night);color:var(--ash);font-family:var(--mono);overflow-x:hidden}
+#fire{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:pointer}
+main{position:relative;z-index:1;max-width:640px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:48px 64px;display:flex;flex-direction:column;gap:28px;pointer-events:none}
+main > *{pointer-events:auto}
+.eyebrow{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--flame);margin:0}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(48px,13vw,96px);line-height:.92;margin:6px 0 0;
+  text-wrap:balance;color:var(--ash);text-shadow:0 0 40px rgba(255,106,43,.45)}
+h1 span{color:var(--flame)}
+.details{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:15px;margin:0}
+.details dt{color:var(--smoke)}
+.details dd{margin:0;color:var(--ash);font-weight:600}
+.count{display:flex;gap:10px;flex-wrap:wrap}
+.cell{background:rgba(18,15,23,.75);border:1px solid var(--term-line);border-radius:8px;padding:10px 12px;min-width:64px;text-align:center}
+.cell b{display:block;font-family:var(--display);font-size:28px;color:var(--spark);font-variant-numeric:tabular-nums}
+.cell small{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--smoke)}
+.hint{font-size:13px;color:var(--smoke);margin:0}
+.hint kbd{border:1px solid var(--term-line);border-radius:4px;padding:1px 5px;color:var(--flame);background:var(--term)}
+.stats{font-size:13px;color:var(--smoke);margin:0}
+.stats b{color:var(--flame)}
+.term{background:rgba(18,15,23,.92);border:1px solid var(--term-line);border-radius:10px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.term-bar{display:flex;gap:6px;padding:9px 12px;border-bottom:1px solid var(--term-line);align-items:center}
+.term-bar i{width:10px;height:10px;border-radius:50%;background:#3a2f3f}
+.term-bar i:first-child{background:var(--ember)}
+.term-bar span{margin-left:8px;font-size:12px;color:var(--smoke)}
+#out{padding:12px 14px 4px;font-size:13px;line-height:1.6;max-height:260px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;margin:0}
+#out .c{color:var(--flame)} #out .ok{color:var(--ok)} #out .dim{color:var(--smoke)}
+form{display:flex;gap:8px;padding:4px 14px 14px;align-items:center}
+form label{color:var(--ok);font-size:13px;white-space:nowrap}
+#cmd{flex:1;min-width:0;background:transparent;border:0;color:var(--ash);font:inherit;font-size:14px;outline:none;caret-color:var(--flame)}
+#cmd:focus-visible{outline:none}
+.term:focus-within{border-color:var(--ember)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 14px}
+.chips button{font:inherit;font-size:12px;background:var(--term);color:var(--flame);border:1px solid var(--term-line);border-radius:999px;padding:4px 10px;cursor:pointer}
+.chips button:hover,.chips button:focus-visible{border-color:var(--ember);outline:none}
+footer{font-size:12px;color:var(--smoke)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;padding:10px 16px;cursor:pointer;
+  border:1px solid var(--term-line);background:rgba(18,15,23,.8);color:var(--ash)}
+.btn.primary{background:var(--ember);border-color:var(--ember);color:var(--night)}
+.btn:hover,.btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){h1{text-shadow:none}}
+</style>
+</head>
+<body>
+<canvas id="fire" aria-label="Animated campfire. Click to throw on a log."></canvas>
+
+<main>
+  <header>
+    <p class="eyebrow">You're invited</p>
+    <h1>Bonfire <span>Night</span></h1>
+  </header>
+
+  <dl class="details">
+    <dt>when</dt><dd>Friday, Nov 27 · 7:00 PM till late</dd>
+    <dt>where</dt><dd>4803 Osage St</dd>
+    <dt>host</dt><dd>Divij</dd>
+  </dl>
+
+  <div class="actions">
+    <a class="btn primary" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Bonfire%20Night&dates=20261128T000000Z/20261128T050000Z&location=4803%20Osage%20St&details=Hosted%20by%20Divij.%20Bring%20a%20chair%2C%20a%20blanket%20and%20a%20warm%20layer.">Add to Google Calendar</a>
+  </div>
+
+
+<span id="logs" hidden></span><span id="temp" hidden></span>
+
+
+</main>
+
+<script>
+(()=>{
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cv=document.getElementById('fire'), ctx=cv.getContext('2d');
+let W,H,dpr;
+function size(){dpr=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+size();addEventListener('resize',size);
+
+let intensity=1, boost=0, logs=0, blowing=false;
+const parts=[], sparks=[];
+const base=()=>({x:W/2, y:H-90});
+
+function spawn(){
+  const b=base(), spread=60*Math.min(intensity,2.2);
+  parts.push({x:b.x+(Math.random()-.5)*spread, y:b.y, vx:(Math.random()-.5)*.6, vy:-(1.4+Math.random()*1.8)*(0.8+intensity*.3),
+    life:1, r:14+Math.random()*16*intensity});
+  if(Math.random()<0.08*intensity) sparks.push({x:b.x+(Math.random()-.5)*spread*.6,y:b.y-20,vx:(Math.random()-.5)*2,vy:-(3+Math.random()*4),life:1});
+}
+function drawLogs(){
+  const b=base();
+  ctx.save();ctx.translate(b.x,b.y+18);
+  for(const a of [0.22,-0.22]){
+    ctx.save();ctx.rotate(a);ctx.fillStyle='#3b2216';ctx.beginPath();ctx.roundRect(-110,-12,220,24,12);ctx.fill();
+    ctx.fillStyle='#6b4026';ctx.beginPath();ctx.arc(102,0,10,0,7);ctx.arc(-102,0,10,0,7);ctx.fill();ctx.restore();
+  }
+  ctx.restore();
+}
+function frame(){
+  const target=1+Math.min(logs,8)*0.12+(blowing?0.6:0);
+  intensity+= (target+boost-intensity)*0.04; boost*=0.96;
+  const n=reduce?1:Math.round(3*intensity);
+  for(let i=0;i<n;i++) spawn();
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgba(11,10,18,0.35)';ctx.fillRect(0,0,W,H);
+  const b=base();
+  const g=ctx.createRadialGradient(b.x,b.y,10,b.x,b.y,320*intensity);
+  g.addColorStop(0,'rgba(255,106,43,0.18)');g.addColorStop(1,'rgba(255,106,43,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.globalCompositeOperation='lighter';
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];p.x+=p.vx+Math.sin((p.y+performance.now()/80)/30)*.4;p.y+=p.vy;p.life-=0.018;p.r*=0.985;
+    if(p.life<=0){parts.splice(i,1);continue}
+    const hue=15+p.life*35, gg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+    gg.addColorStop(0,`hsla(${hue},100%,${55+p.life*20}%,${p.life*0.55})`);gg.addColorStop(1,'hsla(10,100%,40%,0)');
+    ctx.fillStyle=gg;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
+  }
+  for(let i=sparks.length-1;i>=0;i--){
+    const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=0.03;s.vx+=(Math.random()-.5)*.2;s.life-=0.012;
+    if(s.life<=0){sparks.splice(i,1);continue}
+    ctx.fillStyle=`rgba(255,224,138,${s.life})`;ctx.fillRect(s.x,s.y,2,2);
+  }
+  ctx.globalCompositeOperation='source-over';drawLogs();
+  document.getElementById('temp').textContent=Math.round(500+intensity*180);
+  requestAnimationFrame(frame);
+}
+frame();
+
+function addLog(){logs++;boost+=0.8;document.getElementById('logs').textContent=logs;
+  for(let i=0;i<40;i++){const b=base();sparks.push({x:b.x+(Math.random()-.5)*80,y:b.y-10,vx:(Math.random()-.5)*5,vy:-(3+Math.random()*7),life:1})}}
+cv.addEventListener('pointerdown',addLog);
+addEventListener('keydown',e=>{if(e.code==='Space'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='BUTTON'){e.preventDefault();blowing=true}});
+addEventListener('keyup',e=>{if(e.code==='Space')blowing=false});
+
+})();
+</script>
+
+</body>
+</html>
